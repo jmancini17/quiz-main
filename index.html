@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="quiz.css">
+	<link href="//cdn-images.mailchimp.com/embedcode/classic-071822.css" rel="stylesheet" type="text/css">
+				<style type="text/css">
+
+				</style>
+	<script>
+		let contentSection, backButton, nextButton, tracker;
+		const content = [
+			{
+				question: 'What is your hair type?',
+				note: 'NOTE: If you can barely feel a strand of hair between your fingers, your hair is fine. if you feel it a little, your hair is medium. if you feel it distinctly, your hair is thick.',
+				answer: {
+					options: ['Fine', 'Medium', 'Thick'],
+					multiselect: false,
+				}
+			},
+			{
+				question: 'What is your natural hair texture?',
+				answer: {
+					options: ['Straight', 'Wavy', 'Curly', 'Coily'],
+					multiselect: false,
+				}
+			},
+			{
+				question: 'How is your scalp?',
+				answer: {
+					options: ['Healthy', 'Itchy', 'Flaky', 'Dry', 'Oily'],
+					multiselect: false,
+				}
+			},
+			{
+				question: 'How would you describe your hair?',
+				answer: {
+					options: ['Natural', 'Bleached', 'Straightened', 'Colored', 'Permed'],
+					multiselect: false,
+				}
+			},
+			{
+				question: 'What are your primary hair concerns?',
+				instructions: '(Select up to 2)',
+				answer: {
+					options: [
+						'Frizz',
+						'Maintain Blonde',
+						'Dryness',
+						'Dandruff',
+						'Scalp Irritation',
+						'UV Protection',
+						'Increase Length',
+						'Dullness',
+						'Oily Scalp',
+						'Hair Fall',
+						'Color Fade',
+						'Thinning Hair',
+						'Covering Grays',
+						'Damaged Hair',
+					],
+					multiselect: 2,
+				}
+			},
+		];
+		let answers = [];
+		let currentContentIdx = 0;
+
+		function fadeIn(el) {
+			if (getComputedStyle(el, null).opacity != 1) {
+				el.classList.remove('fade-in', 'fade-out');
+				el.classList.add('fade-in');
+			}
+		}
+
+		function fadeOut(el) {
+			if (getComputedStyle(el, null).opacity != 0) {
+				el.classList.remove('fade-in', 'fade-out');
+				el.classList.add('fade-out');
+			}
+		}
+
+		function addElement(elementName, configureElementFunc, parentElement = contentSection) {
+			const el = document.createElement(elementName);
+			configureElementFunc(el);
+			parentElement.appendChild(el);
+		}
+		
+		function init() {
+			contentSection = document.getElementsByClassName('content-section')[0];
+			backButton = document.getElementsByClassName('backButton')[0];
+			nextButton = document.getElementsByClassName('nextButton')[0];
+			tracker = document.getElementsByClassName('tracker')[0]
+			contentSection.addEventListener('animationend', e => {
+				if (contentSection.classList.contains('fade-out')) {
+
+					[...tracker.getElementsByClassName('step')].forEach((step, stepIdx) => {
+						if (stepIdx <= currentContentIdx) {
+							step.classList.add('selected');
+						} else {
+							step.classList.remove('selected');
+						}
+					});
+
+					while (contentSection.firstChild) {
+						contentSection.removeChild(contentSection.firstChild);
+					}
+					const currentContent = content[currentContentIdx];
+					if (currentContent) {
+						addElement('h1', el => {
+							el.classList.add('question');
+							el.innerText = currentContent.question;
+						});
+
+						if (currentContent.note) {
+							addElement('h3', el => {
+								el.classList.add('note');
+								el.innerText = currentContent.note;
+							});
+						}
+
+						if (currentContent.instructions) {
+							addElement('h2', el => {
+								el.classList.add('select-instructions');
+								el.innerText = currentContent.instructions;
+							})
+						}
+
+						addElement('div', el => {
+							el.classList.add('answers-container');
+							el.style.position = 'relative';
+
+							currentContent.answer.options.forEach((option, buttonIdx) => {
+								addElement('div', answerDiv => {
+									answerDiv.classList.add('answer');
+									answerDiv.setAttribute('type', 'button');
+									if (currentContent.answer.multiselect) {
+										answerDiv.setAttribute('onClick', 'multiselectButtonClicked();');
+									} else {
+										answerDiv.setAttribute('onClick', `nextButtonClicked([${buttonIdx}]);`);
+									}
+									answerDiv.innerText = option;
+								}, el);
+							});
+						});
+
+						if (answers.length > 0) {
+							fadeIn(backButton);
+						}
+
+						if (currentContent && currentContent.answer.multiselect) {
+							fadeIn(nextButton);
+						}
+
+						fadeIn(tracker);
+					} else {
+						console.log("Quiz Completed", answers);
+
+						addElement('div', el => {
+							el.classList.add('popup');
+							addElement('a', innerEl => {
+								innerEl.classList.add('exit');
+								addElement('img', inner3El => {
+									inner3El.classList.add('exit-button');
+									inner3El.src = "images/exit.png";
+								}, innerEl)
+							}, el)
+
+							addElement('div', innerEl => {
+								innerEl.classList.add('popup-title');
+								innerEl.innerText = "Enter your email address to see your hair routine";
+							}, el)
+							addElement('div', innerEl => {
+								innerEl.classList.add('popup-subtitle');
+								innerEl.innerText = "(Don’t worry, we’ll keep your info to ourselves!)";
+							}, el)
+							addElement('div', innerEl => {
+								innerEl.setAttribute('id', 'mc-embed-signup');
+								addElement('form', inner3El => {
+									inner3El.classList.add('validate');	
+									inner3El.setAttribute('action', 'https://argonaia.us13.list-manage.com/subscribe/post?u=1e7ce404565aaa98ba8928553&amp;id=9013708cc6&amp;f_id=0057dfe2f0');
+									inner3El.setAttribute('id', 'mc-embedded-subscribe-form');
+									inner3El.setAttribute('name', 'mc-embedded-subscribe-form'); 
+									inner3El.setAttribute('target', '_self'); 
+									inner3El.setAttribute('method', 'post');
+									addElement('div', inner4El => {
+										inner4El.setAttribute('id', 'mc_embed_signup_scroll');
+										addElement('div', inner5El => {
+											inner5El.classList.add('mc-field-group');
+											addElement('input', inner6El => {
+												inner6El.setAttribute('type', 'email');
+												inner6El.setAttribute('placeholder', ' Email address');
+												inner6El.setAttribute('name', 'EMAIL');
+												inner6El.setAttribute('value', '');
+												inner6El.classList.add('required', 'email');
+												inner6El.setAttribute('id', 'mce-EMAIL');
+											}, inner5El)
+											addElement('span', inner6El => {
+												inner6El.classList.add('helper-text');
+												inner6El.setAttribute('id', 'mce-EMAIL-HELPERTEXT');
+											}, inner5El)
+											addElement('input', inner6El => {
+												inner6El.setAttribute('type', 'submit');
+												inner6El.setAttribute('value', 'JOIN');
+												inner6El.setAttribute('name', 'subscribe');
+												inner6El.setAttribute('id', 'mc-embedded-subscribe');
+												inner6El.classList.add('button');
+											}, inner5El)
+
+										}, inner4El)
+										addElement('div', inner5El => {
+											inner5El.setAttribute('id', 'mce-responses');
+											inner5El.classList.add('clear', 'foot');
+											addElement('div', inner6El => {
+												inner6El.classList.add('response');
+												inner6El.setAttribute('id', 'mce-error-response');
+											}, inner5El);
+											addElement('div', inner6El => {
+												inner6El.classList.add('response');
+												inner6El.setAttribute('id', 'mce-success-response');
+											}, inner5El);
+										}, inner4El);
+
+										addElement('div', inner5El => {
+											inner5El.setAttribute('aria-hidden', 'true');
+											inner5El.style.position = 'absolute';
+											inner5El.style.left = '-5000px';
+											addElement('input', inner6El => {
+												inner6El.setAttribute('type', 'text');
+												inner6El.setAttribute('name', 'b_1e7ce404565aaa98ba8928553_9013708cc6');
+												inner6El.setAttribute('tabindex', '-1');
+												inner6El.setAttribute('value', '');
+											}, inner5El);
+										}, inner4El);
+
+									}, inner3El)
+								}, innerEl)
+						}, el)
+					})
+
+
+
+
+
+
+
+						
+
+						addElement('h1', el => {
+							el.innerText = "Hello world";
+						});
+					}
+					
+
+					fadeIn(contentSection);
+				}
+			});
+
+		};
+		
+
+		function fadeOutGenericControlsIfNecessary() {
+			if (currentContentIdx >= content.length || answers.length <= 0) {
+				fadeOut(backButton);
+			}
+
+			if (currentContentIdx >= content.length || !content[currentContentIdx].answer.multiselect) {
+				fadeOut(nextButton);;
+			}
+
+			if (currentContentIdx >= content.length) {
+				fadeOut(tracker);
+			}
+		}
+
+		function reloadContent() {
+			fadeOutGenericControlsIfNecessary();
+			fadeOut(contentSection);
+		}
+
+		function nextButtonClicked(selectedButtonIndices) {
+			answers.push(selectedButtonIndices);
+			currentContentIdx++;
+			reloadContent();
+		}
+
+		function backButtonClicked() {
+			answers.pop();
+			currentContentIdx--;
+			reloadContent();
+		}
+
+		function multiselectButtonClicked() {
+			const clickedButton = event.target;
+			const allAnswers = [...document.getElementsByClassName('answer')];
+			const selected = [];
+			allAnswers.forEach((answerEl, answerIdx) => {
+				if (
+					(answerEl.classList.contains('selected') && answerEl !== clickedButton) ||
+					(answerEl === clickedButton && !answerEl.classList.contains('selected'))
+				) {
+					selected.push(answerIdx);
+				}
+			});
+			if (selected.length <= content[currentContentIdx].answer.multiselect) {
+				allAnswers.forEach((answerEl, answerIdx) => {
+					if (selected.includes(answerIdx)) {
+						answerEl.classList.add('selected');
+					} else {
+						answerEl.classList.remove('selected');
+					}
+				});
+				nextButton.setAttribute(
+					'onClick',
+					`${selected.length > 0 ? `nextButtonClicked([${selected.join(',')}])` : ''}`
+				)
+			}
+		}
+
+		function startQuiz() {
+			fadeOut(contentSection);
+		}
+
+	</script>
+
+</head>
+<body style="background-color:#FCFCF2;margin:0px;" onload="init();">
+	<div class=body-container>
+
+<div class="left-section" style="display:inline-block;width:25%;">
+
+	<img id="squiggle1" src="images/squiggle.png" style="width:50%;margin-left:34%;">
+	<img id="squiggle1mobile" src="images/horizontal-squiggle.png">
+
+</div>
+
+
+<div class="middle-section">
+	<div class="tracker" style="opacity:0;">
+		<div class="step"></div>
+		<div class="step"></div>
+		<div class="step"></div>
+		<div class="step"></div>
+		<div class="step"></div>
+	</div>
+
+			<div class="backButton" type="button" style="opacity:0;" onClick="backButtonClicked();"><img class="button-image" src="images/back-arrow.png"/>BACK</div>
+
+	<div class="content-section">
+
+		<h1 class="intro">What is your best hair routine?</h1>
+		<h4 class="next">Got two minutes? This QUICK and COMPREHENSIVE 
+quiz will tell you which routine works best for YOUR hair and give 
+you product recommendations!</h4>
+<h4 class="third-heading"> We'll answer questions like...</h4>
+	<div class="initial-questions">
+			<div class="question-columns">
+			<p>…what shampoo will help tame my frizz?</p>
+			<p>...should I use a scalp serum?</p>
+			<p>...how do I add volume to flat hair?</p>
+			<p>...how do I hydrate my textured hair?</p>
+			<p>...what can I use for hair loss?</p>
+			<p>...how do I keep my hair looking shiny?</p>
+
+
+		</div>		
+		</div>
+		<div class="button-container" style="position:relative;">
+			<button class="startButton" type="button" onClick="startQuiz();">START QUIZ</button>
+		</div>
+	</div>
+	<div class="bottomButtonsContainer">
+		<div class="nextButton" type="button" style="opacity:0;">SEE MY RESULTS!</div>
+	</div>
+</div>
+
+<div class="right-section" style="display:inline-block;width:25%;">
+
+	<img class="squiggle2" src="images/squiggle2.png" style="max-width:50%;height:100%;margin-left:26%;">
+
+
+</div>
+
+	<script type='text/javascript' src='//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js'></script><script type='text/javascript'>(function($) {window.fnames = new Array(); window.ftypes = new Array();fnames[0]='EMAIL';ftypes[0]='email';fnames[1]='FNAME';ftypes[1]='text';fnames[2]='LNAME';ftypes[2]='text';fnames[3]='ADDRESS';ftypes[3]='address';fnames[4]='PHONE';ftypes[4]='phone';fnames[5]='BIRTHDAY';ftypes[5]='birthday';}(jQuery));var $mcj = jQuery.noConflict(true);</script>
+				<!--End mc_embed_signup-->
+</div>
+</body>
+</html>
