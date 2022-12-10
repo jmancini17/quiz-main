@@ -599,6 +599,8 @@ button {
 	cursor: pointer;
 }
 
+
+
 @keyframes fade-in {
 	from {
 		opacity: 0;
@@ -629,6 +631,10 @@ button {
 	animation-duration: 0.5s;
 	animation-direction: normal;
 	animation-fill-mode: forwards;
+}
+
+.button {
+	cursor: pointer;
 }
 
 div[type=button] {

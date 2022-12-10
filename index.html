@@ -64,6 +64,7 @@
 		];
 		let answers = [];
 		let currentContentIdx = 0;
+		let formSent = false;
 
 		function fadeIn(el) {
 			if (getComputedStyle(el, null).opacity != 1) {
@@ -152,7 +153,7 @@
 						}
 
 						fadeIn(tracker);
-					} else {
+					} else if (!formSent) {
 						console.log("Quiz Completed", answers);
 
 						addElement('div', el => {
@@ -171,7 +172,7 @@
 							}, el)
 							addElement('div', innerEl => {
 								innerEl.classList.add('popup-subtitle');
-								innerEl.innerText = "(Don’t worry, we’ll keep your info to ourselves!)";
+								innerEl.innerText = "(Don't worry, we'll keep your info to ourselves!)";
 							}, el)
 							addElement('div', innerEl => {
 								innerEl.setAttribute('id', 'mc-embed-signup');
@@ -234,27 +235,33 @@
 
 									}, inner3El)
 								}, innerEl)
-						}, el)
-					})
-
-
-
-
-
-
-
-						
-
-						addElement('h1', el => {
-							el.innerText = "Hello world";
+							}, el)
+						});
+					} else {
+						console.log('Form sent');
+						addElement('h1', h1 => {
+							h1.innerText = 'We done';
 						});
 					}
-					
 
 					fadeIn(contentSection);
 				}
 			});
+			document.addEventListener('submit', (e) => {
+				const form = e.target;
 
+				if (form.id === 'mc-embedded-subscribe-form') {
+					fetch(form.action, {
+						method: form.method,
+						body: new FormData(form),
+						mode: 'no-cors',
+					});
+					formSent = true;
+					reloadContent();
+				}
+
+				e.preventDefault();
+			})
 		};
 		
 
@@ -354,7 +361,7 @@ you product recommendations!</h4>
 <h4 class="third-heading"> We'll answer questions like...</h4>
 	<div class="initial-questions">
 			<div class="question-columns">
-			<p>…what shampoo will help tame my frizz?</p>
+			<p>...what shampoo will help tame my frizz?</p>
 			<p>...should I use a scalp serum?</p>
 			<p>...how do I add volume to flat hair?</p>
 			<p>...how do I hydrate my textured hair?</p>
